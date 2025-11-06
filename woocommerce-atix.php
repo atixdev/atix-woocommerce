@@ -6,14 +6,14 @@
  * This is a simple payment gateway for Atix Payment Services.
  *
  * @link              https://dashboard.atix.com.pe/
- * @since             3.1.0
+ * @since             3.1.1
  * @package           woocommerce_atix
  *
  * @wordpress-plugin
  * Plugin Name:       Atix Payment Gateway for Woocommerce
  * Plugin URI:        https://docs.atix.com.pe/plugin-woocommerce
  * Description:       This is a simple payment gateway for Atix Payment Services.
- * Version:           3.1.0
+ * Version:           3.1.1
  * Author:            Atix
  * Author URI:        https://atix.com.pe/
  * License:           GPL-2.0+
@@ -21,6 +21,7 @@
  * Text Domain:       woocommerce-atix
  * Domain Path:       /languages
  * Update URI:        atix.com/plugin
+ * GitHub Plugin URI: https://github.com/atixdev/atix-woocommerce
  * Requires at least: 4.9
  * Tested up to: 6.7.2
  * Requires PHP: 5.5
@@ -36,7 +37,7 @@ if ( ! defined( 'WPINC' ) ) {
 /* --------------------------------------------------------------
     DEFINE CURRENT PLUGIN VERSION
 -------------------------------------------------------------- */
-define( 'WOOCOMMERCE_ATIX_VERSION', '3.1.0' );
+define( 'WOOCOMMERCE_ATIX_VERSION', '3.1.1' );
 
 require dirname( __FILE__ ) . '/plugin-update-checker/load-v5p5.php';
 
