@@ -58,8 +58,21 @@ function manejar_webhook_notificacion() {
                 
                 // Actualizar el pedido en WooCommerce
                 $order = wc_get_order($reference_id);
-
+                $status = $order->get_status();
+                
+                
                 if ($order) {
+                    
+                    if($status === "completed"){
+                        $response = array(
+                        'order_id' => $order->get_id(),
+                        'status' => $order->get_status(),
+                        'message' => 'Pedido ya se encuentra actualizado.'
+                        );
+                    
+                        wp_send_json_success($response);
+                    }
+                    
                     // Actualizar el estado del pedido
                     if ($status_transaction === "00") {
                         $order->update_status($finalStatusTransaction, 'Pago recibido.');
