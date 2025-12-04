@@ -46,6 +46,7 @@ function custom_page_controller(){
             ),
             'body' => json_encode($data)
         ));
+
         if (is_wp_error($response)) {
             // Manejar el error si ocurre
         } else {
@@ -57,20 +58,34 @@ function custom_page_controller(){
 
             $response = json_decode($body);
             $resultCode = $response[0]->ResultCode;
+            $status = $order->get_status();
+            $my_webhook_is_active = false;
+
+            if(isset($atixGateway->securityKey)){
+                if(!empty($atixGateway->securityKey)){
+                    $my_webhook_is_active = true;
+                }
+            }
 
             if (isset($response[0]->ResultCode) && $resultCode === '00') {
-                // Update order
-                $order->payment_complete();
-                // $order->reduce_order_stock();
-                wc_reduce_stock_levels($order);
-                $order->update_status($finalStatusTransaction);
-                $order->save();
+
+                if(!$my_webhook_is_active && $status !== $finalStatusTransaction){
+                    // Update order
+                    $order->payment_complete();
+                    // $order->reduce_order_stock();
+                    wc_reduce_stock_levels($order);
+                    $order->update_status($finalStatusTransaction);
+                    $order->save();
+                }
 
                 redirectPageToUrl("/$sectionUrl/order-received/".$order->get_id().'/?key='.$order->get_order_key());
 
             } else {
-                $order->update_status('failed');
-                $order->save();
+
+                if(!$my_webhook_is_active){
+                    $order->update_status('failed');
+                    $order->save();
+                }
                 
                 redirectPageToUrl("/$sectionUrl/order-received/".$order->get_id().'/?key='.$order->get_order_key());
             }
