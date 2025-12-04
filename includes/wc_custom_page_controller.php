@@ -61,13 +61,13 @@ function custom_page_controller(){
             $status = $order->get_status();
             $my_webhook_is_active = false;
 
-            if (isset($response[0]->ResultCode) && $resultCode === '00') {
-
-                if(isset($atixGateway->securityKey)){
-                    if(!empty($atixGateway->securityKey)){
-                        $my_webhook_is_active = true;
-                    }
+            if(isset($atixGateway->securityKey)){
+                if(!empty($atixGateway->securityKey)){
+                    $my_webhook_is_active = true;
                 }
+            }
+
+            if (isset($response[0]->ResultCode) && $resultCode === '00') {
 
                 if(!$my_webhook_is_active && $status !== $finalStatusTransaction){
                     // Update order
@@ -81,6 +81,7 @@ function custom_page_controller(){
                 redirectPageToUrl("/$sectionUrl/order-received/".$order->get_id().'/?key='.$order->get_order_key());
 
             } else {
+
                 if(!$my_webhook_is_active){
                     $order->update_status('failed');
                     $order->save();
