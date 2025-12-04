@@ -63,7 +63,7 @@ function manejar_webhook_notificacion() {
                 
                 if ($order) {
                     
-                    if($status === "completed"){
+                    if($status === $finalStatusTransaction){
                         $response = array(
                         'order_id' => $order->get_id(),
                         'status' => $order->get_status(),
