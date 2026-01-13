@@ -4,7 +4,7 @@ Donate link: https://atix.com.pe
 Tags: payment, gateway, woocommerce, atix, peru
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 3.1.0
+Stable tag: 3.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -46,6 +46,8 @@ Para la instalación es necesario seguir los siguientes pasos:
 
 
 == Changelog ==
+<h4>Versión 3.2.0</h4><ul><li>Agregada compatibilidad con checkout por bloques de WooCommerce</li></ul>
+
 <h4>Versión 3.1.3</h4><ul><li>Mejora en la actualización del estado de compra</li></ul>
 
 <h4>Versión 3.1.2</h4><ul><li>Mejora en imagen de marca</li></ul>
@@ -58,5 +60,5 @@ Para la instalación es necesario seguir los siguientes pasos:
 
 == Upgrade Notice ==
 
-= 3.1.3 =
-Mejora en la actualización del estado de compra
+= 3.2.0 =
+Compatibilidad con checkout por bloques de WooCommerce
