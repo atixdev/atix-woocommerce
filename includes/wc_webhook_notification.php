@@ -52,7 +52,7 @@ function manejar_webhook_notificacion() {
                 $hash = hash('sha256', $concatenated_string);
                 
                 //verificar que las firmas coincidan
-                if($hash !== $signature){
+                if ( ! hash_equals( $hash, $signature ) ) {
                     wp_send_json_error('Firma no valida.', 401);
                 }
                 
@@ -75,7 +75,7 @@ function manejar_webhook_notificacion() {
                     
                     // Actualizar el estado del pedido
                     if ($status_transaction === "00") {
-                        $order->update_status($finalStatusTransaction, 'Pago recibido.');
+                        atix_complete_order( $order, $finalStatusTransaction, 'Pago recibido.' );
                     } else {
                         $order->update_status('failed', 'No se pudo procesar el pago.');
                     }

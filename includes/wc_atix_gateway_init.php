@@ -62,7 +62,6 @@ function wc_atix_gateway_init() {
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
             add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ));
             add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
-            add_action( 'woocommerce_api_atix', array( $this, 'webhook' ) );
             // Customer Emails
             add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
         }
@@ -84,15 +83,6 @@ function wc_atix_gateway_init() {
             return $result;
         }
 
-
-        public function api_get_token_info($token){
-            $payload_data = '{
-                "Tokenid": ["'.$token.'"]
-            }';
-            $result = $this->api_curl_request($payload_data, 'https://gateway.atix.com.pe/payment/v1/api/ResultTransactionByTokenId');
-            $response = json_decode($result, true);
-            return $response;
-        }
 
         /* FIELDS TO CONFIGURE Atix PAYMENT SERVICES */
         public function init_form_fields() {
@@ -230,14 +220,6 @@ function wc_atix_gateway_init() {
             }
         }
 
-        public function webhook() {
-            $order = wc_get_order( $_GET['id'] );
-            $order->payment_complete();
-            // $order->reduce_order_stock();
-            wc_reduce_stock_levels($order);
-            update_option('webhook_debug', $_GET);
-        }
-
         public function render_order_form( $order_id ) {
             $isLacpsRedirect = get_query_var('atix_redirect');
 
@@ -271,8 +253,6 @@ function wc_atix_gateway_init() {
 
                 $array_data = json_encode($array_xuser);
                 $payload_data = '{
-                    "User": "wzzzGE38zPk5pUKWd7jhN",
-                    "Password": "YkSzED4ty92BjMa2SXYsF",
                     "Apikey": "'. $this->apikey .'",
                     "Version": "V1.1",
                     "Data": ' . $array_data . '

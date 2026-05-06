@@ -3,9 +3,11 @@
 function custom_page_controller(){
    
     $atixGateway = new WC_Gateway_Atix();
+    $sectionUrl  = $atixGateway->sectionNameUrl;
+
     try {
 
-        $token = $_GET['tk'];
+        $token = isset( $_GET['tk'] ) ? sanitize_text_field( $_GET['tk'] ) : '';
 
         ?>
         <div style="width: 100%; display: flex; justify-content: center; flex-direction: column; align-items: center; margin-top: 40px;">
@@ -20,11 +22,11 @@ function custom_page_controller(){
 
         $debug = $atixGateway->testmode;
 
-        $url =  BASE_URL_SANDBOX . '/GBCPE_ResultTransaction';
+        $url = BASE_URL_SANDBOX . '/GBCPE_ResultTransaction';
 
-        if(!$debug){
-            $url =  BASE_URL_PROD . '/GBCPE_ResultTransaction';
-        } 
+        if (!$debug) {
+            $url = BASE_URL_PROD . '/GBCPE_ResultTransaction';
+        }
 
         // Obtener el identificador del pedido actual, de la sesión orderId
         $orderId = isset($_SESSION['orderId']) ? $_SESSION['orderId'] : '';
@@ -38,9 +40,9 @@ function custom_page_controller(){
         $data = array(
             "Token" => $token
         );
-        
+
         $response = wp_remote_request($url, array(
-            'method' => 'POST',
+            'method'  => 'POST',
             'headers' => array(
                 'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
             ),
@@ -50,53 +52,40 @@ function custom_page_controller(){
         if (is_wp_error($response)) {
             // Manejar el error si ocurre
         } else {
-            $atixGateway = new WC_Gateway_Atix();
             $finalStatusTransaction = $atixGateway->finalStatus;
-            $sectionUrl = $atixGateway->sectionNameUrl;
 
-            $body = wp_remote_retrieve_body($response);
-
+            $body     = wp_remote_retrieve_body($response);
             $response = json_decode($body);
             $resultCode = $response[0]->ResultCode;
-            $status = $order->get_status();
-            $my_webhook_is_active = false;
-
-            if(isset($atixGateway->securityKey)){
-                if(!empty($atixGateway->securityKey)){
-                    $my_webhook_is_active = true;
-                }
-            }
 
             if (isset($response[0]->ResultCode) && $resultCode === '00') {
+                // atix_complete_order usa transient lock para evitar doble procesamiento
+                // con el webhook. Si el webhook ya completó el pedido, esta llamada
+                // detecta el estado final y no realiza ninguna acción.
+                atix_complete_order( $order, $finalStatusTransaction, 'Pago confirmado por retorno del cliente.' );
 
-                if(!$my_webhook_is_active && $status !== $finalStatusTransaction){
-                    // Update order
-                    $order->payment_complete();
-                    // $order->reduce_order_stock();
-                    wc_reduce_stock_levels($order);
-                    $order->update_status($finalStatusTransaction);
-                    $order->save();
-                }
-
-                redirectPageToUrl("/$sectionUrl/order-received/".$order->get_id().'/?key='.$order->get_order_key());
+                redirectPageToUrl("/$sectionUrl/order-received/" . $order->get_id() . '/?key=' . $order->get_order_key());
 
             } else {
 
-                if(!$my_webhook_is_active){
+                // Solo marcar como fallido si el pedido aún no fue completado por el webhook
+                if ($order->get_status() !== $finalStatusTransaction) {
                     $order->update_status('failed');
                     $order->save();
                 }
-                
-                redirectPageToUrl("/$sectionUrl/order-received/".$order->get_id().'/?key='.$order->get_order_key());
+
+                redirectPageToUrl("/$sectionUrl/order-received/" . $order->get_id() . '/?key=' . $order->get_order_key());
             }
         }
 
     } catch (\Exception $e) {
 
         echo $e->getMessage();
-        $order->update_status('failed');
-        $order->save();
-        redirectPageToUrl("/$sectionUrl/order-received/".$order->get_id().'/?key='.$order->get_order_key());
+        if (isset($order) && $order) {
+            $order->update_status('failed');
+            $order->save();
+            redirectPageToUrl("/$sectionUrl/order-received/" . $order->get_id() . '/?key=' . $order->get_order_key());
+        }
         exit;
     }
 }
