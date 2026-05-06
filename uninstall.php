@@ -29,3 +29,7 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+// Eliminar opciones del plugin almacenadas en la base de datos.
+delete_option( 'woocommerce_atix_gateway_settings' );
+delete_option( 'webhook_debug' );

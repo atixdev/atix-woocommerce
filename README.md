@@ -96,6 +96,12 @@ Una vez configurado, el plugin aparecerá automáticamente como método de pago 
 
 ## 📝 Changelog
 
+### Versión 3.2.1
+- 🔒 Mejoras de seguridad en el procesamiento de pagos
+- 🐛 Corrección en el descuento de stock al completar un pedido
+- 🔧 Prevención de procesamiento duplicado de órdenes
+- 🔧 La URL del webhook ahora se registra correctamente al instalar el plugin
+
 ### Versión 3.2.0
 - ✨ Agregada compatibilidad con checkout por bloques de WooCommerce
 
