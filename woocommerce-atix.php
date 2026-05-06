@@ -6,7 +6,7 @@
  * This is a simple payment gateway for Atix Payment Services.
  *
  * @link              https://dashboard.atix.com.pe/
- * @since             3.2.0
+ * @since             3.2.1
  * @package           woocommerce_atix
  *
  * @wordpress-plugin
